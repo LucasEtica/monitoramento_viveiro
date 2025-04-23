@@ -1,0 +1,108 @@
+/* Estilos gerais */
+.cadastros-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.cadastros-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.cadastros-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-description {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Grid de cards */
+.cadastro-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+/* Card individual */
+.cadastro-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 1rem;
+  border: 1px solid #eee;
+}
+
+.cadastro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-color: #3498db;
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-icon {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.vivario-icon {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-content h2 {
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.4rem;
+}
+
+.card-content p {
+  color: #7f8c8d;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.card-badge {
+  display: inline-block;
+  background-color: #f5f5f5;
+  color: #3498db;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .cadastro-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .cadastros-header h1 {
+    font-size: 2rem;
+  }
+}

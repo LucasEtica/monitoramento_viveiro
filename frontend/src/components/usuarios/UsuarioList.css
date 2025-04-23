@@ -1,0 +1,228 @@
+/* Estilos gerais */
+.usuario-list-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Tabela */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.usuario-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.usuario-table th,
+.usuario-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.usuario-table th {
+  background-color: #f8f9fa;
+  color: #34495e;
+  font-weight: 600;
+}
+
+.usuario-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Célula de ações */
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Botões */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-view {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn-view:hover {
+  background-color: #27ae60;
+}
+
+.btn-edit {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #e67e22;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.back-button {
+  margin-top: 2rem;
+  background-color: transparent;
+  color: #3498db;
+  border: 1px solid #3498db;
+}
+
+.back-button:hover {
+  background-color: #f8f9fa;
+}
+
+/* Mensagens */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+}
+
+.error-message {
+  color: #e74c3c;
+  background-color: #fdeded;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #e74c3c;
+}
+
+.no-data {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 1.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .usuario-list-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .usuario-table th,
+  .usuario-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .actions-cell {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .btn-sm {
+    width: 100%;
+  }
+}
+
+/* Modal de Confirmação */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.modal-content p {
+  color: #34495e;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-cancel {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-confirm-delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-confirm-delete:hover {
+  background-color: #c0392b;
+}

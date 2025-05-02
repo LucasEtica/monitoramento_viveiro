@@ -12,6 +12,40 @@ const usuariosController = {
     }
   },
 
+  async logar(req, res) {
+    console.log("Chegou, deu bom!")
+    console.log("Dados recebidos:", req.body);
+    const { email, senha } = req.body;
+  
+    try {
+      // Busca o usuário pelo email
+      const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+      const usuario = result.rows[0];
+  
+      if (!usuario) {
+        return res.status(401).json({ mensagem: 'Credenciais inválidas' });
+      }
+  
+      // Compara senha com bcrypt
+      const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+      if (!senhaCorreta) {
+        return res.status(401).json({ mensagem: 'Credenciais inválidas' });
+      }
+  
+      return res.json({
+        usuario: {
+          id: usuario.id,
+          email: usuario.email,
+          nome: usuario.nome,
+        },
+        token: 'fake-token', // futuramente substitua por JWT real
+      });
+    } catch (err) {
+      console.error('Erro no login:', err);
+      res.status(500).json({ mensagem: 'Erro interno no servidor' });
+    }
+  },
+
   // Obter usuário específico
   async mostrar(req, res) {
     const { id } = req.params;

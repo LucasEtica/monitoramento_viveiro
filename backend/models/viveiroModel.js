@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 // Configuração (mantida igual)
 const pool = new Pool({
   user: 'postgres',
-  host: 'localhost',
+  host: 'postgres',
   database: 'monitoramento_viveiro',
   password: 'postgres',
   port: 5432,
@@ -42,7 +42,7 @@ async function createViveirosTable() {
           titulo VARCHAR(100) NOT NULL,
           descricao TEXT,
           usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);

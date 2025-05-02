@@ -129,12 +129,6 @@ function UsuarioForm() {
         </div>
       </form>
       
-      <button 
-        onClick={() => navigate('/cadastros/usuarios')} 
-        className="btn back-button"
-      >
-        Voltar para Lista
-      </button>
     </div>
   );
 }

@@ -13,6 +13,14 @@ const dbConfig = {
   idleTimeoutMillis: 30000 // Fechar conexões ociosas
 };
 
+async function tableExists(tableName) {
+  const result = await pool.query(
+    "SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = $1)",
+    [tableName]
+  );
+  return result.rows[0].exists;
+}
+
 // Validação crítica da senha
 if (!dbConfig.password) {
   console.error('❌ Erro: DB_PASSWORD não definida no .env');
@@ -21,7 +29,7 @@ if (!dbConfig.password) {
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'localhost',
+  host: 'postgres',
   database: 'monitoramento_viveiro',
   password: 'postgres',
   port: 5432,
@@ -38,6 +46,11 @@ pool.on('error', (err) => {
   console.error('❌ Erro na pool do PostgreSQL:', err);
 });
 
+async function buscarPorEmail(email) {
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  return result.rows[0]; // Retorna o primeiro usuário encontrado, ou undefined
+}
+
 // Versão robusta da criação de tabela
 async function createUsersTable() {
   const client = await pool.connect().catch(err => {
@@ -47,20 +60,22 @@ async function createUsersTable() {
 
   try {
     await client.query('BEGIN');
-    
-    // Criação condicional da tabela
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS usuarios (
-        id SERIAL PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        senha VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
 
-    // Criação condicional do índice (COM TRATAMENTO DE ERRO)
+    if (!(await tableExists('usuarios'))) {
+      await client.query(`
+        CREATE TABLE usuarios (
+          id SERIAL PRIMARY KEY,
+          nome VARCHAR(100) NOT NULL,
+          email VARCHAR(100) UNIQUE NOT NULL,
+          senha VARCHAR(100) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+    }
+
+    await client.query('COMMIT');
+    
     try {
       await client.query(`
         CREATE INDEX CONCURRENTLY IF NOT EXISTS 
@@ -70,13 +85,9 @@ async function createUsersTable() {
       //console.log('Índice já existe, continuando...');
     }
 
-    await client.query('COMMIT');
-    //console.log('✅ Tabela e índices verificados com sucesso');
   } catch (err) {
     await client.query('ROLLBACK');
-    // Modifique esta mensagem para não assustar :)
-    //console.log('ℹ️ A tabela/índices já existiam, continuando...');
-    return; // Sai silenciosamente
+    console.error('❌ Falha ao criar tabela de usuários:', err);
   } finally {
     client.release();
   }
@@ -106,5 +117,6 @@ module.exports = {
   pool,
   bcrypt,
   saltRounds,
-  initializeDatabase // Exporta para controle explícito
+  initializeDatabase,
+  buscarPorEmail // 👈 Adicionado aqui
 };

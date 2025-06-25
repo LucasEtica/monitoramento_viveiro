@@ -62,6 +62,15 @@ function TiposPesticidaShow() {
           <span className="detail-value">{tipoPesticida.descricao || 'Sem descrição'}</span>
         </div>
         <div className="detail-row">
+          <span className="detail-label">Viveiro:</span>
+          <span className="detail-value">{tipoPesticida.viveiro_nome || '—'}</span>
+        </div>
+
+        <div className="detail-row">
+          <span className="detail-label">Status:</span>
+          <span className="detail-value">{tipoPesticida.inativo ? 'Inativo' : 'Ativo'}</span>
+        </div>
+        <div className="detail-row">
           <span className="detail-label">Criado em:</span>
           <span className="detail-value">
             {tipoPesticida.created_at

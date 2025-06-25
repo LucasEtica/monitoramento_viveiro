@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 
 function TiposPesticidaList() {
@@ -9,20 +9,29 @@ function TiposPesticidaList() {
   const [modal, setModal] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const viveiroId = searchParams.get('viveiro_id');
 
   useEffect(() => {
     carregarDados();
-  }, []);
+  }, [viveiroId]);
 
   const carregarDados = async () => {
     setLoading(true);
     setErro(null);
     try {
-      const res = await api.get('/tipos-pesticida');
-      setDados(res.data);
+      const res = await api.get('/tipos-pesticida', {
+        params: viveiroId ? { viveiro_id: viveiroId } : {},
+      });
+
+      if (res.data.success) {
+        setDados(res.data.data);
+      } else {
+        setErro(res.data.error || 'Erro ao buscar dados');
+      }
     } catch (err) {
       console.error(err);
-      setErro('Erro ao buscar tipos de pesticida');
+      setErro('Erro ao buscar dados');
     } finally {
       setLoading(false);
     }
@@ -32,7 +41,7 @@ function TiposPesticidaList() {
     try {
       await api.delete(`/tipos-pesticida/${itemSelecionado.id}`);
       carregarDados();
-    } catch (err) {
+    } catch {
       setErro('Erro ao excluir');
     } finally {
       setModal(false);
@@ -42,15 +51,21 @@ function TiposPesticidaList() {
   if (loading) return <div className="loading">Carregando...</div>;
 
   return (
-    <div className="tipo-pesticida-list-container">
+    <div className="page-container">
       {modal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Confirmar Exclusão</h3>
-            <p>Tem certeza que deseja excluir <strong>{itemSelecionado?.titulo}</strong>?</p>
+            <p>
+              Tem certeza que deseja excluir <strong>{itemSelecionado?.titulo}</strong>?
+            </p>
             <div className="modal-actions">
-              <button onClick={() => setModal(false)} className="btn btn-cancel">Cancelar</button>
-              <button onClick={confirmarExclusao} className="btn btn-confirm-delete">Confirmar Exclusão</button>
+              <button onClick={() => setModal(false)} className="btn btn-cancel">
+                Cancelar
+              </button>
+              <button onClick={confirmarExclusao} className="btn btn-confirm-delete">
+                Confirmar Exclusão
+              </button>
             </div>
           </div>
         </div>
@@ -58,7 +73,12 @@ function TiposPesticidaList() {
 
       <div className="header-actions">
         <h2 className="page-title">Tipos de Pesticida</h2>
-        <Link to="/cadastros/tipos-pesticida/novo" className="btn btn-primary">Novo Tipo</Link>
+        <Link
+          to={`/cadastros/tipos-pesticida/novo${viveiroId ? `?viveiro_id=${viveiroId}` : ''}`}
+          className="btn btn-primary"
+        >
+          Novo Tipo
+        </Link>
       </div>
 
       {erro && <div className="error-message">{erro}</div>}
@@ -70,6 +90,8 @@ function TiposPesticidaList() {
               <th>ID</th>
               <th>Título</th>
               <th>Descrição</th>
+              <th>Viveiro</th>
+              <th>Status</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -80,6 +102,8 @@ function TiposPesticidaList() {
                   <td>{item.id}</td>
                   <td>{item.titulo}</td>
                   <td>{item.descricao || '—'}</td>
+                  <td>{item.viveiro_nome || '—'}</td>
+                  <td>{item.inativo ? 'Inativo' : 'Ativo'}</td>
                   <td className="actions-cell">
                     <Link to={`/cadastros/tipos-pesticida/${item.id}`} className="btn btn-sm btn-view">Ver</Link>
                     <Link to={`/cadastros/tipos-pesticida/${item.id}/editar`} className="btn btn-sm btn-edit">Editar</Link>
@@ -89,14 +113,23 @@ function TiposPesticidaList() {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="no-data">Nenhum tipo de pesticida cadastrado</td>
+                <td colSpan="6" className="no-data">Nenhum tipo de pesticida cadastrado</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      <button onClick={() => navigate('/cadastros')} className="btn back-button">Voltar para Cadastros</button>
+      <button
+        onClick={() =>
+          navigate(
+            viveiroId ? `/cadastros/viveiros/${viveiroId}` : '/cadastros'
+          )
+        }
+        className="btn back-button"
+      >
+        {viveiroId ? 'Voltar para Viveiro' : 'Voltar para Cadastros'}
+      </button>
     </div>
   );
 }

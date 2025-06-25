@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
+import '../../global.css';
 
 function TipoPlantaList() {
   const [tipos, setTipos] = useState([]);
@@ -9,10 +10,12 @@ function TipoPlantaList() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tipoToDelete, setTipoToDelete] = useState(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const viveiroId = searchParams.get('viveiro_id');
 
   useEffect(() => {
     carregarTipos();
-  }, []);
+  }, [viveiroId]);
 
   const carregarTipos = async () => {
     setIsLoading(true);
@@ -21,7 +24,11 @@ function TipoPlantaList() {
     try {
       const response = await api.get('/tipos-planta');
       if (response.data.success) {
-        setTipos(response.data.data);
+        let lista = response.data.data;
+        if (viveiroId) {
+          lista = lista.filter(tipo => String(tipo.viveiro_id) === viveiroId);
+        }
+        setTipos(lista);
       } else {
         setError(response.data.error || 'Dados inesperados');
       }
@@ -58,7 +65,7 @@ function TipoPlantaList() {
   }
 
   return (
-    <div className="viveiro-list-container">
+    <div className="page-container">
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -68,10 +75,10 @@ function TipoPlantaList() {
               <br />Esta ação não pode ser desfeita.
             </p>
             <div className="modal-actions">
-              <button onClick={() => setShowDeleteModal(false)} className="btn btn-cancel">
+              <button onClick={() => setShowDeleteModal(false)} className="btn back-button">
                 Cancelar
               </button>
-              <button onClick={handleConfirmDelete} className="btn btn-confirm-delete">
+              <button onClick={handleConfirmDelete} className="btn btn-delete">
                 Confirmar Exclusão
               </button>
             </div>
@@ -81,7 +88,10 @@ function TipoPlantaList() {
 
       <div className="header-actions">
         <h2 className="page-title">Tipos de Planta</h2>
-        <Link to="/cadastros/tipos-planta/novo" className="btn btn-primary">
+        <Link 
+          to={`/cadastros/tipos-planta/novo${viveiroId ? `?viveiro_id=${viveiroId}` : ''}`} 
+          className="btn btn-primary"
+        >
           Novo Tipo de Planta
         </Link>
       </div>
@@ -89,12 +99,14 @@ function TipoPlantaList() {
       {error && <div className="error-message">{error}</div>}
 
       <div className="table-responsive">
-        <table className="viveiro-table">
+        <table>
           <thead>
             <tr>
               <th>ID</th>
               <th>Título</th>
               <th>Descrição</th>
+              <th>Viveiro</th>
+              <th>Status</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -105,32 +117,33 @@ function TipoPlantaList() {
                   <td>{tipo.id}</td>
                   <td>{tipo.titulo}</td>
                   <td>{tipo.descricao || 'N/A'}</td>
-                  <td className="actions-cell">
-                    <Link to={`/cadastros/tipos-planta/${tipo.id}`} className="btn btn-sm btn-view">
-                      Ver
-                    </Link>
-                    <Link to={`/cadastros/tipos-planta/${tipo.id}/editar`} className="btn btn-sm btn-edit">
-                      Editar
-                    </Link>
-                    <button onClick={() => handleDeleteClick(tipo)} className="btn btn-sm btn-delete">
-                      Excluir
-                    </button>
+                  <td>{tipo.viveiro_nome || 'N/A'}</td>
+                  <td>{tipo.inativo ? 'Inativo' : 'Ativo'}</td>
+                  <td>
+                    <Link to={`/cadastros/tipos-planta/${tipo.id}`} className="btn btn-sm btn-secondary">Ver</Link>
+                    <Link to={`/cadastros/tipos-planta/${tipo.id}/editar`} className="btn btn-sm btn-edit">Editar</Link>
+                    <button onClick={() => handleDeleteClick(tipo)} className="btn btn-sm btn-delete">Excluir</button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="no-data">
-                  Nenhum tipo de planta cadastrado
-                </td>
+                <td colSpan="6" className="no-data">Nenhum tipo de planta cadastrado</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      <button onClick={() => navigate('/cadastros')} className="btn back-button">
-        Voltar para Cadastros
+      <button
+        onClick={() =>
+          navigate(
+            viveiroId ? `/cadastros/viveiros/${viveiroId}` : '/cadastros'
+          )
+        }
+        className="btn back-button"
+      >
+        {viveiroId ? 'Voltar para Viveiro' : 'Voltar para Cadastros'}
       </button>
     </div>
   );

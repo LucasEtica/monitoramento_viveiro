@@ -10,8 +10,8 @@ const pool = new Pool({
   idleTimeoutMillis: 30000
 });
 
-pool.on('connect', () => console.log('🟢 Conexão PostgreSQL (tipos_pesticida)'));
-pool.on('error', (err) => console.error('❌ Erro PostgreSQL (tipos_pesticida):', err));
+pool.on('connect', () => console.log('🟢 Conexão PostgreSQL (movimentações)'));
+pool.on('error', (err) => console.error('❌ Erro PostgreSQL (movimentações):', err));
 
 async function tableExists(tableName) {
   const result = await pool.query(
@@ -21,12 +21,12 @@ async function tableExists(tableName) {
   return result.rows[0].exists;
 }
 
-async function createTipoPesticidaTable() {
+async function createMovimentacoesTable() {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    if (!(await tableExists('tipos_pesticida'))) {
+    if (!(await tableExists('movimentacoes'))) {
       await client.query(`
         CREATE TABLE tipos_pesticida (
           id SERIAL PRIMARY KEY,
@@ -44,19 +44,32 @@ async function createTipoPesticidaTable() {
     await client.query('COMMIT');
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('❌ Erro ao criar tabela tipos_pesticida:', err);
+    console.error('❌ Falha na criação:', err);
+    throw err;
   } finally {
     client.release();
   }
 }
 
-// initializeDatabase();
+initializeDatabase();
 
 async function initializeDatabase() {
-  await createTipoPesticidaTable();
+  try {
+    await createMovimentacoesTable();
+  } catch (err) {
+    console.error('❌ Falha na inicialização:', err);
+    throw err;
+  }
 }
+
+setInterval(() => {
+  pool.query('SELECT 1')
+    .then(() => console.debug('✔️ Conexão ativa (movimentações)'))
+    .catch(err => console.error('⚠️ Falha na verificação:', err));
+}, 300000);
 
 module.exports = {
   pool,
   initializeDatabase,
+  tableExists
 };

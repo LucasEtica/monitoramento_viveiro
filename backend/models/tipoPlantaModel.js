@@ -32,8 +32,11 @@ async function createTipoPlantaTable() {
           id SERIAL PRIMARY KEY,
           titulo VARCHAR(100) NOT NULL,
           descricao TEXT,
+          inativo BOOLEAN NOT NULL DEFAULT false,
+          viveiro_id INTEGER NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT fk_tipos_planta_viveiro FOREIGN KEY (viveiro_id) REFERENCES viveiros(id)
         )
       `);
     }

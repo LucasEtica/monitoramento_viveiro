@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import './ViveiroForm.css';
 
 function ViveiroForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
+
   const [formData, setFormData] = useState({
     titulo: '',
     descricao: '',
-    usuario_id: ''
+    usuario_id: usuarioLogado.usuario.admin ? '' : usuarioLogado.usuario.id
   });
   const [usuarios, setUsuarios] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,12 +21,11 @@ function ViveiroForm() {
     const carregarDados = async () => {
       setIsLoading(true);
       try {
-        const [usuariosResponse] = await Promise.all([
-          api.get('/usuarios')
-        ]);
-        
-        setUsuarios(usuariosResponse.data);
-        
+        if (usuarioLogado.usuario.admin) {
+          const usuariosResponse = await api.get('/usuarios');
+          setUsuarios(usuariosResponse.data);
+        }
+
         if (id && id !== 'novo') {
           const viveiroResponse = await api.get(`/viveiros/${id}`);
           setFormData(viveiroResponse.data.data);
@@ -63,11 +63,8 @@ function ViveiroForm() {
         response = await api.post('/viveiros', formData);
       }
 
-      // Verificação robusta do sucesso
       if (response.status >= 200 && response.status < 300) {
         setSuccess(id ? 'Viveiro atualizado com sucesso!' : 'Viveiro criado com sucesso!');
-        
-        // Redireciona após 1.5 segundos para mostrar mensagem
         setTimeout(() => {
           navigate('/cadastros/viveiros');
         }, 1500);
@@ -76,45 +73,21 @@ function ViveiroForm() {
       }
     } catch (err) {
       console.error('Erro completo:', err);
-      
-      // Tratamento detalhado de erros
-      const errorMessage = err.response?.data?.error || 
-                         err.response?.data?.message || 
-                         'Erro ao salvar viveiro';
-      
+      const errorMessage = err.response?.data?.error || 'Erro ao salvar viveiro';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading) {
-    return <div className="loading">Carregando...</div>;
-  }
-
   return (
-    <div className="viveiro-form-container">
+    <div className="page-container">
       <div className="form-header">
-        <h2>{id ? 'Editar Viveiro' : 'Novo Viveiro'}</h2>
-        <button 
-          onClick={() => navigate('/cadastros/viveiros')} 
-          className="btn btn-back"
-        >
-          &larr; Voltar
-        </button>
+        <h2>🌱 {id ? 'Editar Viveiro' : 'Novo Viveiro'}</h2>
       </div>
 
-      {error && (
-        <div className="error-message">
-          <strong>Erro:</strong> {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="success-message">
-          <strong>Sucesso!</strong> {success}
-        </div>
-      )}
+      {error && <div className="error-message"><strong>Erro:</strong> {error}</div>}
+      {success && <div className="success-message"><strong>Sucesso!</strong> {success}</div>}
 
       <form onSubmit={handleSubmit} className="viveiro-form">
         <div className="form-group">
@@ -126,8 +99,6 @@ function ViveiroForm() {
             value={formData.titulo}
             onChange={handleChange}
             required
-            maxLength="100"
-            placeholder="Nome do viveiro"
             disabled={isLoading}
           />
         </div>
@@ -140,41 +111,34 @@ function ViveiroForm() {
             value={formData.descricao}
             onChange={handleChange}
             rows="4"
-            placeholder="Detalhes sobre o viveiro"
             disabled={isLoading}
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="usuario_id">Responsável*</label>
-          <select
-            id="usuario_id"
-            name="usuario_id"
-            value={formData.usuario_id}
-            onChange={handleChange}
-            required
-            disabled={isLoading}
-          >
-            <option value="">Selecione um responsável</option>
-            {usuarios.map(usuario => (
-              <option key={usuario.id} value={usuario.id}>
-                {usuario.nome} ({usuario.email})
-              </option>
-            ))}
-          </select>
-        </div>
+        {usuarioLogado.usuario.admin && (
+          <div className="form-group">
+            <label htmlFor="usuario_id">Responsável*</label>
+            <select
+              id="usuario_id"
+              name="usuario_id"
+              value={formData.usuario_id}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            >
+              <option value="">Selecione um responsável</option>
+              {usuarios.map(usuario => (
+                <option key={usuario.id} value={usuario.id}>
+                  {usuario.nome} ({usuario.email})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span>Salvando...</span>
-            ) : (
-              <span>{id ? 'Atualizar' : 'Salvar'} Viveiro</span>
-            )}
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Salvar'}
           </button>
           <button
             type="button"

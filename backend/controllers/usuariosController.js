@@ -37,8 +37,9 @@ const usuariosController = {
           id: usuario.id,
           email: usuario.email,
           nome: usuario.nome,
+          admin: usuario.admin // 👈 aqui
         },
-        token: 'fake-token', // futuramente substitua por JWT real
+        token: 'fake-token' // substitua depois por JWT real
       });
     } catch (err) {
       console.error('Erro no login:', err);
@@ -63,12 +64,12 @@ const usuariosController = {
 
   // Criar usuário
   async criar(req, res) {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, admin = false } = req.body;
     try {
       const hashedPassword = await bcrypt.hash(senha, saltRounds);
       const result = await pool.query(
-        'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING id, nome, email, created_at',
-        [nome, email, hashedPassword]
+        'INSERT INTO usuarios (nome, email, senha, admin) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, admin, created_at',
+        [nome, email, hashedPassword, admin ?? false] // ✅ adiciona admin, com fallback para false
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {

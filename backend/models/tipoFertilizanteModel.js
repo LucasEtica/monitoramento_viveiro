@@ -31,13 +31,17 @@ async function createTipoFertilizanteTable() {
       );
       if (!existsResult.rows[0].exists) {
         await client.query(`
-          CREATE TABLE tipo_fertilizante (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(100) NOT NULL,
-            descricao TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-          )
-        `);
+        CREATE TABLE tipo_fertilizante (
+          id SERIAL PRIMARY KEY,
+          titulo VARCHAR(100) NOT NULL,
+          descricao TEXT,
+          inativo BOOLEAN NOT NULL DEFAULT false,
+          viveiro_id INTEGER NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT fk_tipo_fertilizante_viveiro FOREIGN KEY (viveiro_id) REFERENCES viveiros(id)
+        )
+      `);
       }
   
       await client.query('COMMIT');
@@ -55,7 +59,7 @@ async function createTipoFertilizanteTable() {
 
 async function initializeDatabase() {
   try {
-    await createTiposFertilizanteTable();
+    await createTipoFertilizanteTable();
   } catch (err) {
     console.error('❌ Falha na inicialização do tipo_fertilizante:', err);
   }

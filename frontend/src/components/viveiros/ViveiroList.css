@@ -8,3 +8,85 @@
   }
   
   /* Adicione os estilos do modal e tabela conforme o UsuarioList.css */
+
+  .viveiro-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.viveiro-card {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-left: 5px solid #4CAF50;
+  border-radius: 8px;
+  width: 280px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.viveiro-card:hover {
+  transform: translateY(-4px);
+}
+
+.viveiro-card h3 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.viveiro-card p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.viveiro-card .card-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.viveiro-card .btn {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.viveiro-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.viveiro-card {
+  display: block;
+  text-decoration: none;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-left: 5px solid #4CAF50;
+  border-radius: 8px;
+  width: 280px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.viveiro-card:hover {
+  transform: translateY(-4px);
+  background-color: #e0f7e9;
+}
+
+.viveiro-card h3 {
+  margin: 0 0 8px;
+}
+
+.viveiro-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}

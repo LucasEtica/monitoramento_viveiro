@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import './UsuarioForm.css'; // Importando o CSS separado
 
 function UsuarioForm() {
   const { id } = useParams();
@@ -9,11 +8,14 @@ function UsuarioForm() {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
-    senha: ''
+    senha: '',
+    admin: false
   });
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || 'null');
+  const isAdmin = usuarioLogado?.usuario?.admin === true;
 
   useEffect(() => {
     if (id && id !== 'novo') {
@@ -24,7 +26,8 @@ function UsuarioForm() {
           setFormData({
             nome: response.data.nome,
             email: response.data.email,
-            senha: ''
+            senha: '',
+            admin: response.data.admin || false
           });
           setIsEdit(true);
         } catch (error) {
@@ -34,16 +37,15 @@ function UsuarioForm() {
           setIsLoading(false);
         }
       };
-
       carregarUsuario();
     }
   }, [id]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -51,7 +53,6 @@ function UsuarioForm() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
     try {
       if (isEdit) {
         await api.put(`/usuarios/${id}`, formData);
@@ -72,13 +73,13 @@ function UsuarioForm() {
   }
 
   return (
-    <div className="usuario-form-container">
-      <h2 className="form-title">{isEdit ? 'Editar Usuário' : 'Novo Usuário'}</h2>
-      
+    <div className="page-container" style={{ maxWidth: 500 }}>
+      <h2 className="page-title">{isEdit ? 'Editar Usuário' : 'Novo Usuário'}</h2>
+
       {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit} className="usuario-form">
-        <div className="form-group">
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
           <label className="form-label">Nome:</label>
           <input
             type="text"
@@ -86,11 +87,9 @@ function UsuarioForm() {
             value={formData.nome}
             onChange={handleChange}
             required
-            className="form-input"
           />
         </div>
-        
-        <div className="form-group">
+        <div>
           <label className="form-label">Email:</label>
           <input
             type="email"
@@ -98,11 +97,9 @@ function UsuarioForm() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="form-input"
           />
         </div>
-        
-        <div className="form-group">
+        <div>
           <label className="form-label">Senha:</label>
           <input
             type="password"
@@ -110,25 +107,35 @@ function UsuarioForm() {
             value={formData.senha}
             onChange={handleChange}
             required={!isEdit}
-            className="form-input"
           />
         </div>
-        
-        <div className="form-actions">
+        {usuarioLogado && isAdmin && (
+          <div>
+            <label className="form-label">
+              <input
+                type="checkbox"
+                name="admin"
+                checked={formData.admin}
+                onChange={handleChange}
+              />{' '}
+              Administrador
+            </label>
+          </div>
+        )}
+        <div style={{ display: 'flex', gap: 12 }}>
           <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Salvando...' : 'Salvar'}
           </button>
-          <button 
-            type="button" 
-            className="btn btn-secondary"
-            onClick={() => navigate('/cadastros/usuarios')}
+          <button
+            type="button"
+            className="btn btn-cancel"
+            onClick={() => navigate(isAdmin ? '/cadastros/usuarios' : '/cadastros')}
             disabled={isLoading}
           >
             Cancelar
           </button>
         </div>
       </form>
-      
     </div>
   );
 }

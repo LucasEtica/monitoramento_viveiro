@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom'; // Importação separada
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
 import './ViveiroShow.css';
 
@@ -9,7 +8,14 @@ function ViveiroShow() {
   const [viveiro, setViveiro] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const isAdmin = usuario?.usuario?.admin === true;
+
+  const [somaCredito, setSomaCredito] = useState(0);
+  const [somaDebito, setSomaDebito] = useState(0);
 
   useEffect(() => {
     const carregarViveiro = async () => {
@@ -18,29 +24,57 @@ function ViveiroShow() {
       try {
         const response = await api.get(`/viveiros/${id}`);
         setViveiro(response.data.data);
-      } catch (error) {
-        console.error('Erro ao carregar viveiro:', error);
+      } catch (err) {
         setError('Falha ao carregar detalhes do viveiro');
       } finally {
         setIsLoading(false);
       }
     };
 
+    const carregarMovimentacoes = async () => {
+      try {
+        const response = await api.get(`/movimentacoes?viveiro_id=${id}`);
+        const movimentacoes = response.data.data;
+
+        let totalCredito = 0;
+        let totalDebito = 0;
+
+        movimentacoes.forEach((mov) => {
+          const valor = parseFloat(mov.valor);
+          if (mov.tipo_movimentacao === 'credito') totalCredito += valor;
+          if (mov.tipo_movimentacao === 'debito') totalDebito += valor;
+        });
+
+        setSomaCredito(totalCredito);
+        setSomaDebito(totalDebito);
+      } catch (err) {
+        console.error('Erro ao buscar movimentacoes:', err);
+      }
+    };
+
     carregarViveiro();
+    carregarMovimentacoes();
   }, [id]);
 
-  if (isLoading) {
-    return <div className="loading">Carregando viveiro...</div>;
-  }
+  const handleDelete = async () => {
+    if (!window.confirm('Tem certeza que deseja excluir este viveiro?')) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/viveiros/${id}`);
+      navigate('/cadastros/viveiros');
+    } catch {
+      alert('Erro ao excluir viveiro.');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
+  if (isLoading) return <div className="loading">Carregando viveiro...</div>;
   if (!viveiro) {
     return (
-      <div className="not-found">
+      <div className="not-found page-container">
         <h2>Viveiro não encontrado</h2>
-        <button 
-          onClick={() => navigate('/cadastros/viveiros')} 
-          className="btn back-button"
-        >
+        <button onClick={() => navigate('/cadastros/viveiros')} className="btn back-button">
           Voltar para Lista
         </button>
       </div>
@@ -48,44 +82,48 @@ function ViveiroShow() {
   }
 
   return (
-    <div className="viveiro-show-container">
+    <div className="viveiro-show-container page-container">
       <div className="header-actions">
         <h2 className="page-title">Detalhes do Viveiro</h2>
         <div className="action-buttons">
-          <Link 
-            to={`/cadastros/viveiros/${viveiro.id}/editar`} 
-            className="btn btn-edit"
-          >
+          <Link to={`/cadastros/viveiros/${viveiro.id}/editar`} className="btn btn-primary">
             Editar Viveiro
           </Link>
+          <button onClick={handleDelete} className="btn btn-delete" disabled={deleting}>
+            {deleting ? 'Excluindo...' : 'Excluir Viveiro'}
+          </button>
         </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       <div className="viveiro-details">
-        <div className="detail-row">
-          <span className="detail-label">ID:</span>
-          <span className="detail-value">{viveiro.id}</span>
-        </div>
-        
+        {isAdmin && (
+          <div className="detail-row">
+            <span className="detail-label">ID:</span>
+            <span className="detail-value">{viveiro.id}</span>
+          </div>
+        )}
+
         <div className="detail-row">
           <span className="detail-label">Título:</span>
           <span className="detail-value">{viveiro.titulo}</span>
         </div>
-        
+
         <div className="detail-row">
           <span className="detail-label">Descrição:</span>
           <span className="detail-value">{viveiro.descricao || 'N/A'}</span>
         </div>
-        
-        <div className="detail-row">
-          <span className="detail-label">Responsável:</span>
-          <span className="detail-value">
-            {viveiro.usuario_nome || 'N/A'} (ID: {viveiro.usuario_id})
-          </span>
-        </div>
-        
+
+        {isAdmin && (
+          <div className="detail-row">
+            <span className="detail-label">Responsável:</span>
+            <span className="detail-value">
+              {viveiro.usuario_nome || 'N/A'} (ID: {viveiro.usuario_id})
+            </span>
+          </div>
+        )}
+
         <div className="detail-row">
           <span className="detail-label">Data de Cadastro:</span>
           <span className="detail-value">
@@ -94,13 +132,49 @@ function ViveiroShow() {
         </div>
       </div>
 
+      <div className="financeiro-resumo">
+        <h3 className="section-title">Resumo Financeiro</h3>
+        <div className="detail-row">
+          <span className="detail-label">Total de Créditos (Entradas com custo):</span>
+          <span className="detail-value">R$ {somaCredito.toFixed(2)}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-label">Total de Débitos (Saídas ou Vendas):</span>
+          <span className="detail-value">R$ {somaDebito.toFixed(2)}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-label">Total financeiro:</span>
+          <span
+            className="detail-value"
+            style={{ color: (somaDebito - somaCredito) >= 0 ? 'green' : 'red' }}
+          >
+            R$ {(somaDebito - somaCredito).toFixed(2)}
+          </span>
+        </div>
+      </div>
+
       <div className="footer-actions">
-        <button 
-          onClick={() => navigate('/cadastros/viveiros')} 
-          className="btn back-button"
-        >
+        <button onClick={() => navigate('/cadastros/viveiros')} className="btn back-button">
           Voltar para Lista
         </button>
+      </div>
+
+      <div className="related-access-section">
+        <h3 className="section-title">Gerenciamento:</h3>
+        <div className="related-links-grid">
+          <Link to={`/cadastros/tipos-planta?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
+            Tipos de Planta
+          </Link>
+          <Link to={`/cadastros/tipos-fertilizante?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
+            Tipos de Fertilizante
+          </Link>
+          <Link to={`/cadastros/tipos-pesticida?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
+            Tipos de Pesticida
+          </Link>
+          <Link to={`/cadastros/movimentacoes?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
+            Movimentações
+          </Link>
+        </div>
       </div>
     </div>
   );

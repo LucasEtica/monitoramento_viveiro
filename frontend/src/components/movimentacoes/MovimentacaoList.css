@@ -1,0 +1,115 @@
+/* frontend/src/components/movimentacoes/MovimentacaoList.css */
+
+.movimentacao-list-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  font-family: sans-serif;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #3182ce;
+  color: white;
+}
+
+.back-button {
+  margin-top: 2rem;
+  background-color: #edf2f7;
+  color: #2d3748;
+}
+
+.error-message {
+  background-color: #fed7d7;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filters select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.movimentacao-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.movimentacao-table th,
+.movimentacao-table td {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.movimentacao-table th {
+  background-color: #f7fafc;
+  font-weight: 600;
+}
+
+.no-data {
+  text-align: center;
+  font-style: italic;
+  color: #718096;
+}
+
+/* Células da tabela */
+.movimentacao-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.movimentacao-table th,
+.movimentacao-table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.movimentacao-table th {
+  background-color: #f2f2f2;
+}
+
+.no-data {
+  text-align: center;
+  padding: 1rem;
+  color: #777;
+}

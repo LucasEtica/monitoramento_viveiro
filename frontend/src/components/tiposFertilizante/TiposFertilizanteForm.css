@@ -1,0 +1,98 @@
+.fertilizante-form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-header h2 {
+  margin: 0;
+}
+
+.btn-back {
+  background-color: transparent;
+  border: none;
+  color: #2a7ae4;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.fertilizante-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.fertilizante-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.fertilizante-form input,
+.fertilizante-form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.fertilizante-form textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-primary {
+  background-color: #2a7ae4;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d5dc5;
+}
+
+.btn-cancel {
+  background-color: #ccc;
+  color: #333;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.error-message,
+.success-message {
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.error-message {
+  background-color: #ffe6e6;
+  color: #d10000;
+}
+
+.success-message {
+  background-color: #e6ffed;
+  color: #1e7e34;
+}

@@ -63,6 +63,15 @@ function TiposFertilizanteShow() {
           <span className="detail-value">{tiposFertilizante.descricao || 'Sem descrição'}</span>
         </div>
         <div className="detail-row">
+          <span className="detail-label">Viveiro:</span>
+          <span className="detail-value">{tiposFertilizante.viveiro_nome || '—'}</span>
+        </div>
+
+        <div className="detail-row">
+          <span className="detail-label">Status:</span>
+          <span className="detail-value">{tiposFertilizante.inativo ? 'Inativo' : 'Ativo'}</span>
+        </div>
+        <div className="detail-row">
           <span className="detail-label">Criado em:</span>
           <span className="detail-value">
             {new Date(tiposFertilizante.created_at).toLocaleString()}

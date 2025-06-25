@@ -19,9 +19,13 @@ import TiposPesticidaList from './components/tipoPesticida/TiposPesticidaList';
 import TiposPesticidaForm from './components/tipoPesticida/TiposPesticidaForm';
 import TiposPesticidaShow from './components/tipoPesticida/TiposPesticidaShow';
 
+import MovimentacaoList from './components/movimentacoes/MovimentacaoList';
+import MovimentacaoForm from './components/movimentacoes/MovimentacaoForm';
 
 import Login from './components/Login'; // Tela de login
 import ProtectedRoute from './ProtectedRoute'; // Componente para proteger rotas
+
+import './global.css';
 
 function App() {
   return (
@@ -101,6 +105,16 @@ function App() {
           </ProtectedRoute>
         } />
 
+        <Route path="/cadastros/movimentacoes" element={
+          <ProtectedRoute>
+            <MovimentacaoList />
+          </ProtectedRoute>
+        } />
+        <Route path="/cadastros/movimentacoes/nova" element={
+          <ProtectedRoute>
+            <MovimentacaoForm />
+          </ProtectedRoute>
+        } />
         {/* Redirecionamento padrão para /cadastros */}
         <Route path="/" element={<Navigate to="/cadastros" replace />} />
       </Routes>

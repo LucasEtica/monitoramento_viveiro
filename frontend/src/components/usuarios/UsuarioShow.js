@@ -88,10 +88,14 @@ function UsuarioShow() {
 
       <div className="footer-actions">
         <button 
-          onClick={() => navigate('/cadastros/usuarios')} 
+          onClick={() =>
+            JSON.parse(localStorage.getItem('usuario'))?.usuario.admin
+              ? navigate('/cadastros/usuarios')
+              : navigate('/cadastros')
+          } 
           className="btn back-button"
         >
-          Voltar para Lista
+          Voltar
         </button>
       </div>
     </div>

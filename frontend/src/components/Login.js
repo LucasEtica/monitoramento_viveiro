@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -25,9 +24,9 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
-        <h2>Acesso ao Sistema</h2>
+    <div className="page-container" style={{ maxWidth: 400, marginTop: 80 }}>
+      <h2 className="page-title" style={{ textAlign: 'center' }}>Acesso ao Sistema</h2>
+      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <input
           type="email"
           placeholder="E-mail"
@@ -42,8 +41,8 @@ function Login() {
           onChange={(e) => setSenha(e.target.value)}
           required
         />
-        <button type="submit" className="btn-login">Entrar</button>
-        <button type="button" onClick={handleCadastroRedirect} className="btn-link">
+        <button type="submit" className="btn btn-primary">Entrar</button>
+        <button type="button" onClick={handleCadastroRedirect} className="btn btn-secondary">
           Não tem conta? Cadastre-se
         </button>
       </form>

@@ -71,8 +71,6 @@ setInterval(() => {
     .catch(err => console.error('⚠️ Falha na verificação (tipo_fertilizante):', err));
 }, 300000);
 
-initializeDatabase();
-
 module.exports = {
   pool,
   initializeDatabase,

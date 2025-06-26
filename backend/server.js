@@ -9,6 +9,7 @@ const tiposPlantaRoutes = require('./routes/tiposPlanta');
 const tiposFertilizanteRoutes = require('./routes/tiposFertilizante');
 const tiposPesticidaRoutes = require('./routes/tiposPesticida');
 const movimentacoesRoutes = require('./routes/movimentacoes');
+const eventosRoutes = require('./routes/eventos');
 
 // Inicialização dos Models
 const { initializeDatabase: initUsuarios } = require('./models/usuarioModel');
@@ -17,6 +18,7 @@ const { initializeDatabase: initTiposPlanta } = require('./models/tipoPlantaMode
 const { initializeDatabase: initTiposFertilizante } = require('./models/tipoFertilizanteModel');
 const { initializeDatabase: initTiposPesticida } = require('./models/tipoPesticidaModel');
 const { initializeDatabase: initMovimentacoes } = require('./models/movimentacaoModel');
+const { initializeDatabase: initEventos } = require('./models/eventoModel');
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ async function startServer() {
     await initTiposFertilizante();
     await initTiposPesticida();
     await initMovimentacoes();
+    await initEventos();
     
     // 4. Configura rotas APÓS a inicialização do banco
     app.use('/api/usuarios', usuariosRoutes);
@@ -45,16 +48,17 @@ async function startServer() {
     app.use('/api/tipos-fertilizante', tiposFertilizanteRoutes);
     app.use('/api/tipos-pesticida', tiposPesticidaRoutes);
     app.use('/api/movimentacoes', movimentacoesRoutes);
+    app.use('/api/eventos', eventosRoutes);
 
     const PORT = process.env.PORT || 5000;
     
     // 5. Inicia o servidor
     app.listen(PORT, () => {
-      console.log(`✅ Servidor rodando na porta ${PORT}`);
+      //console.log(`✅ Servidor rodando na porta ${PORT}`);
     });
     
   } catch (err) {
-    console.error('❌ Falha na inicialização:', err);
+    //console.error('❌ Falha na inicialização:', err);
     process.exit(1);
   }
 }

@@ -50,7 +50,7 @@ function ViveiroList() {
       await api.delete(`/viveiros/${viveiroDel.id}`);
       carregarViveiros();
     } catch {
-      setError('Falha ao excluir viveiro');
+      setError('Viveiro não pode ser excluido, há movimentações ligadas ao item. (Acione o suporte)');
     } finally {
       setShowDelete(false);
       setViveiroDel(null);

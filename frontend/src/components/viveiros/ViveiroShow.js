@@ -1,3 +1,4 @@
+// ViveiroShow.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -16,6 +17,7 @@ function ViveiroShow() {
 
   const [somaCredito, setSomaCredito] = useState(0);
   const [somaDebito, setSomaDebito] = useState(0);
+  const [eventosPendentes, setEventosPendentes] = useState([]);
 
   useEffect(() => {
     const carregarViveiro = async () => {
@@ -52,8 +54,22 @@ function ViveiroShow() {
       }
     };
 
+    const carregarEventos = async () => {
+      try {
+        const res = await api.get(`/eventos?viveiro_id=${id}`);
+        const hoje = new Date().toISOString().split('T')[0];
+        const pendentes = res.data.data.filter(e =>
+          !e.lido && e.data_evento.split('T')[0] <= hoje
+        );
+        setEventosPendentes(pendentes);
+      } catch (err) {
+        console.error('Erro ao carregar eventos:', err);
+      }
+    };
+
     carregarViveiro();
     carregarMovimentacoes();
+    carregarEventos();
   }, [id]);
 
   const handleDelete = async () => {
@@ -66,6 +82,15 @@ function ViveiroShow() {
       alert('Erro ao excluir viveiro.');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const confirmarEvento = async (eventoId) => {
+    try {
+      await api.put(`/eventos/${eventoId}`, { lido: true });
+      setEventosPendentes(prev => prev.filter(e => e.id !== eventoId));
+    } catch (err) {
+      alert('Erro ao confirmar evento.');
     }
   };
 
@@ -94,6 +119,32 @@ function ViveiroShow() {
           </button>
         </div>
       </div>
+
+      {eventosPendentes.length > 0 && (
+        <div className="alert-warning">
+          <h3>⚠️ Eventos pendentes!</h3>
+          <ul>
+            {eventosPendentes.map(ev => {
+              const detalhes = [];
+              if (ev.fertilizante_nome) detalhes.push(`Aplicação de Fertilizante: ${ev.fertilizante_nome}`);
+              if (ev.pesticida_nome) detalhes.push(`Aplicação de Pesticida: ${ev.pesticida_nome}`);
+              if (ev.irrigacao) detalhes.push('Irrigação programada');
+
+              return (
+                <li key={ev.id}>
+                  <strong>{new Date(ev.data_evento).toLocaleDateString()}:</strong>
+                  <ul>
+                    {detalhes.map((d, i) => <li key={i}>{d}</li>)}
+                  </ul>
+                  <button onClick={() => confirmarEvento(ev.id)} className="btn btn-primary btn-sm">
+                    Confirmar
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {error && <div className="error-message">{error}</div>}
 
@@ -173,6 +224,9 @@ function ViveiroShow() {
           </Link>
           <Link to={`/cadastros/movimentacoes?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
             Movimentações
+          </Link>
+          <Link to={`/cadastros/eventos?viveiro_id=${viveiro.id}`} className="btn btn-secondary">
+            Eventos
           </Link>
         </div>
       </div>

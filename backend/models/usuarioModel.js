@@ -111,9 +111,6 @@ setInterval(() => {
     .catch(err => console.error('⚠️ Falha na verificação:', err));
 }, 300000); // A cada 5 minutos
 
-// Inicializa imediatamente
-initializeDatabase();
-
 module.exports = {
   pool,
   bcrypt,

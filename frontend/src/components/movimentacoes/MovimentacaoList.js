@@ -123,6 +123,26 @@ function MovimentacaoList() {
     const descViveiro = viveiroSelecionado?.descricao || 'Sem descrição';
     const dataHora = new Date().toLocaleString('pt-BR');
 
+    let totalCreditoValor = 0;
+    let totalDebitoValor = 0;
+    let totalCreditoQtd = 0;
+    let totalDebitoQtd = 0;
+
+    filtradas.forEach(m => {
+      const valor = parseFloat(m.valor) || 0;
+      const qtd = parseFloat(m.quantidade) || 0;
+      if (m.tipo_movimentacao === 'credito') {
+        totalCreditoValor += valor;
+        totalCreditoQtd += qtd;
+      } else if (m.tipo_movimentacao === 'debito') {
+        totalDebitoValor += valor;
+        totalDebitoQtd += qtd;
+      }
+    });
+
+    const saldoDinheiro = totalDebitoValor - totalCreditoValor;
+    const saldoQuantidade = totalCreditoQtd - totalDebitoQtd;
+
     doc.setFontSize(16);
     doc.text('Relatório de Movimentações', 14, 15);
     doc.setFontSize(10);
@@ -131,8 +151,37 @@ function MovimentacaoList() {
     doc.text(`Emitido por: ${nomeUsuario}`, 14, 35);
     doc.text(`Data/Hora: ${dataHora}`, 14, 41);
 
+    const filtros = [];
+    if (filtroTipo) filtros.push(`Tipo: ${filtroTipo}`);
+    if (filtroDataInicio) filtros.push(`Início: ${filtroDataInicio}`);
+    if (filtroDataFim) filtros.push(`Fim: ${filtroDataFim}`);
+
+    const plantaNome = plantas.find(p => String(p.id) === filtroPlanta)?.titulo;
+    if (filtroPlanta && plantaNome) filtros.push(`Planta: ${plantaNome}`);
+
+    const fertNome = fertilizantes.find(f => String(f.id) === filtroFertilizante)?.titulo;
+    if (filtroFertilizante && fertNome) filtros.push(`Fertilizante: ${fertNome}`);
+
+    const pestNome = pesticidas.find(p => String(p.id) === filtroPesticida)?.titulo;
+    if (filtroPesticida && pestNome) filtros.push(`Pesticida: ${pestNome}`);
+
+    if (filtros.length > 0) {
+      doc.setFontSize(11);
+      doc.setTextColor(40);
+      doc.setFont(undefined, 'bold');
+      doc.text('Filtros Aplicados:', 14, 47);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(0);
+
+      filtros.forEach((filtro, index) => {
+        doc.text(`- ${filtro}`, 14, 53 + index * 6);
+      });
+    }
+
+    const startY = 53 + filtros.length * 6 + 5;
+
     autoTable(doc, {
-      startY: 50,
+      startY,
       head: [['ID', 'Tipo', 'Item', 'Qtd', 'Valor (R$)', 'Data']],
       body: filtradas.map(m => [
         m.id,
@@ -144,8 +193,31 @@ function MovimentacaoList() {
       ]),
     });
 
+    const yFinal = doc.lastAutoTable.finalY + 10;
+    autoTable(doc, {
+      startY: yFinal,
+      head: [['Resumo Financeiro e de Estoque']],
+      body: [
+        [`Saldo financeiro: R$ ${saldoDinheiro.toFixed(2)}`],
+        [`Saldo estoque: ${saldoQuantidade}`],
+      ],
+      styles: {
+        fontSize: 10,
+        halign: 'left',
+        cellPadding: 4,
+      },
+      headStyles: {
+        fillColor: [22, 160, 133],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+      },
+      theme: 'grid',
+      margin: { left: 14, right: 14 },
+    });
+
     doc.save(`relatorio_movimentacoes_${nomeViveiro.replace(/\s+/g, '_')}.pdf`);
   };
+
 
   return (
     <div className="movimentacao-list-container">
@@ -182,10 +254,12 @@ function MovimentacaoList() {
             <option value="debito">Débito</option>
           </select>
 
-          <select value={filtroViveiro} onChange={e => setFiltroViveiro(e.target.value)}>
-            <option value="">Viveiro</option>
-            {viveiros.map(v => <option key={v.id} value={v.id}>{v.titulo}</option>)}
-          </select>
+          {isAdmin && (
+            <select value={filtroViveiro} onChange={e => setFiltroViveiro(e.target.value)}>
+              <option value="">Viveiro</option>
+              {viveiros.map(v => <option key={v.id} value={v.id}>{v.titulo}</option>)}
+            </select>
+          )}
 
           <input type="date" value={filtroDataInicio} onChange={e => setFiltroDataInicio(e.target.value)} />
           <input type="date" value={filtroDataFim} onChange={e => setFiltroDataFim(e.target.value)} />
@@ -205,7 +279,20 @@ function MovimentacaoList() {
             {pesticidas.map(p => <option key={p.id} value={p.id}>{p.titulo}</option>)}
           </select>
 
-          <button className="btn btn-secondary" onClick={gerarPDF}>Exportar PDF</button>
+          <div className="filtros-actions">
+            <button className="btn btn-secondary" onClick={() => {
+              setFiltroTipo('');
+              setFiltroViveiro('');
+              setFiltroDataInicio('');
+              setFiltroDataFim('');
+              setFiltroPlanta('');
+              setFiltroFertilizante('');
+              setFiltroPesticida('');
+            }}>
+              Limpar Filtros
+            </button>
+            <button className="btn btn-primary" onClick={gerarPDF}>Exportar PDF</button>
+          </div>
         </div>
       )}
 

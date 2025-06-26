@@ -13,8 +13,8 @@ const usuariosController = {
   },
 
   async logar(req, res) {
-    console.log("Chegou, deu bom!")
-    console.log("Dados recebidos:", req.body);
+    //console.log("Chegou, deu bom!")
+    //console.log("Dados recebidos:", req.body);
     const { email, senha } = req.body;
   
     try {

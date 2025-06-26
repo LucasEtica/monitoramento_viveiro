@@ -50,8 +50,6 @@ async function createTipoPlantaTable() {
   }
 }
 
-initializeDatabase();
-
 async function initializeDatabase() {
   await createTipoPlantaTable();
 }

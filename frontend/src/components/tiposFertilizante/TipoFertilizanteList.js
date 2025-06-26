@@ -41,7 +41,7 @@ function TiposFertilizanteList() {
       await api.delete(`/tipos-fertilizante/${itemSelecionado.id}`);
       carregarDados();
     } catch {
-      setErro('Erro ao excluir');
+      setErro('Tipo fertilizante não pode ser excluido, há movimentações ligadas ao item. (Acione o suporte)');
     } finally {
       setModal(false);
     }
@@ -100,7 +100,6 @@ function TiposFertilizanteList() {
                   <td>{item.viveiro_nome || '—'}</td>
                   <td>{item.inativo ? 'Inativo' : 'Ativo'}</td>
                   <td className="actions-cell">
-                    <Link to={`/cadastros/tipos-fertilizante/${item.id}`} className="btn btn-sm btn-view">Ver</Link>
                     <Link to={`/cadastros/tipos-fertilizante/${item.id}/editar`} className="btn btn-sm btn-edit">Editar</Link>
                     <button
                       onClick={() => {

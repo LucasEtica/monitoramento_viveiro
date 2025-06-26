@@ -53,7 +53,7 @@ function TipoPlantaList() {
       setError(null);
     } catch (error) {
       console.error('Erro ao deletar tipo de planta:', error);
-      setError('Falha ao excluir tipo de planta');
+      setError('Tipo planta não pode ser excluido, há movimentações ligadas ao item. (Acione o suporte)');
     } finally {
       setShowDeleteModal(false);
       setTipoToDelete(null);
@@ -120,7 +120,6 @@ function TipoPlantaList() {
                   <td>{tipo.viveiro_nome || 'N/A'}</td>
                   <td>{tipo.inativo ? 'Inativo' : 'Ativo'}</td>
                   <td>
-                    <Link to={`/cadastros/tipos-planta/${tipo.id}`} className="btn btn-sm btn-secondary">Ver</Link>
                     <Link to={`/cadastros/tipos-planta/${tipo.id}/editar`} className="btn btn-sm btn-edit">Editar</Link>
                     <button onClick={() => handleDeleteClick(tipo)} className="btn btn-sm btn-delete">Excluir</button>
                   </td>

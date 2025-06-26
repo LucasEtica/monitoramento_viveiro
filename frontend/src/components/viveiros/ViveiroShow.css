@@ -14,5 +14,45 @@
   margin-top: 20px;
   border-radius: 8px;
 }
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-left: 6px solid #ffc107;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 6px;
+}
+.alert-warning h3 {
+  margin-top: 0;
+}
+.alert-warning ul {
+  list-style: none;
+  padding: 0;
+}
+.alert-warning li {
+  margin-bottom: 0.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alert-warning .btn-sm {
+  padding: 0.3em 0.7em;
+  font-size: 0.9em;
+}
+
+.alert-evento-pendente {
+  border: 1px solid #ff9800;
+  background-color: #fff3cd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
+.btn-confirmar-evento {
+  margin-top: 0.5rem;
+  background-color: #4caf50;
+  color: white;
+}
+
   
   /* Adicione os estilos de detalhes conforme o UsuarioShow.css */

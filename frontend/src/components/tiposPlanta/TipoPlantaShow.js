@@ -20,13 +20,20 @@ function TipoPlantaShow() {
 
   return (
     <div className="tipo-show-container">
-      <h2>Detalhes do Tipo de Planta</h2>
-      <p><strong>ID:</strong> {tipo.id}</p>
-      <p><strong>Título:</strong> {tipo.titulo}</p>
-      <p><strong>Viveiro:</strong> {tipo.viveiro_nome || 'N/A'}</p>
-      <p><strong>Status:</strong> {tipo.inativo ? 'Inativo' : 'Ativo'}</p>
-      <Link to={`/cadastros/tipos-planta/${tipo.id}/editar`} className="btn btn-edit">Editar</Link>
-      <button onClick={() => navigate('/cadastros/tipos-planta')} className="btn back-button">Voltar</button>
+      <div className="header-actions">
+        <h2>Detalhes do Tipo de Planta</h2>
+        <div className="action-buttons">
+          <Link to={`/cadastros/tipos-planta/${tipo.id}/editar`} className="btn btn-primary">Editar</Link>
+          <button onClick={() => navigate('/cadastros/tipos-planta')} className="btn btn-secondary">Voltar</button>
+        </div>
+      </div>
+
+      <div className="tipo-detalhes">
+        <p><strong>ID:</strong> {tipo.id}</p>
+        <p><strong>Título:</strong> {tipo.titulo}</p>
+        <p><strong>Viveiro:</strong> {tipo.viveiro_nome || 'N/A'}</p>
+        <p><strong>Status:</strong> {tipo.inativo ? 'Inativo' : 'Ativo'}</p>
+      </div>
     </div>
   );
 }

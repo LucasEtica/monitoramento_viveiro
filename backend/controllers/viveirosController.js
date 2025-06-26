@@ -6,7 +6,7 @@ const viveirosController = {
       const { admin, usuario_id } = req.query;
 
       let result;
-      console.log("Admin?" + admin)
+      //console.log("Admin?" + admin)
       if (admin === 'true') {
         // Admin vê todos os viveiros
         result = await pool.query(`

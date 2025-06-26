@@ -50,8 +50,6 @@ async function createTipoPesticidaTable() {
   }
 }
 
-// initializeDatabase();
-
 async function initializeDatabase() {
   await createTipoPesticidaTable();
 }

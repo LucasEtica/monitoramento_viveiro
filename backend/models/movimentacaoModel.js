@@ -28,15 +28,21 @@ async function createMovimentacoesTable() {
 
     if (!(await tableExists('movimentacoes'))) {
       await client.query(`
-        CREATE TABLE tipos_pesticida (
+        CREATE TABLE movimentacoes (
           id SERIAL PRIMARY KEY,
-          titulo VARCHAR(100) NOT NULL,
-          descricao TEXT,
-          inativo BOOLEAN NOT NULL DEFAULT false,
+          observacao TEXT,
+          tipo_movimentacao VARCHAR(20) NOT NULL,
+          valor NUMERIC(10, 2),
+          quantidade INTEGER,
           viveiro_id INTEGER NOT NULL,
+          tipo_planta_id INTEGER,
+          tipo_fertilizante_id INTEGER,
+          tipo_pesticida_id INTEGER,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          CONSTRAINT fk_tipos_pesticida_viveiro FOREIGN KEY (viveiro_id) REFERENCES viveiros(id)
+          CONSTRAINT fk_movimentacao_viveiro FOREIGN KEY (viveiro_id) REFERENCES viveiros(id),
+          CONSTRAINT fk_movimentacao_planta FOREIGN KEY (tipo_planta_id) REFERENCES tipos_planta(id),
+          CONSTRAINT fk_movimentacao_fertilizante FOREIGN KEY (tipo_fertilizante_id) REFERENCES tipo_fertilizante(id),
+          CONSTRAINT fk_movimentacao_pesticida FOREIGN KEY (tipo_pesticida_id) REFERENCES tipos_pesticida(id)
         )
       `);
     }
@@ -44,20 +50,18 @@ async function createMovimentacoesTable() {
     await client.query('COMMIT');
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('❌ Falha na criação:', err);
+    console.error('❌ Falha na criação da tabela movimentacoes:', err);
     throw err;
   } finally {
     client.release();
   }
 }
 
-initializeDatabase();
-
 async function initializeDatabase() {
   try {
     await createMovimentacoesTable();
   } catch (err) {
-    console.error('❌ Falha na inicialização:', err);
+    console.error('❌ Falha na inicialização da tabela movimentacoes:', err);
     throw err;
   }
 }
@@ -65,7 +69,7 @@ async function initializeDatabase() {
 setInterval(() => {
   pool.query('SELECT 1')
     .then(() => console.debug('✔️ Conexão ativa (movimentações)'))
-    .catch(err => console.error('⚠️ Falha na verificação:', err));
+    .catch(err => console.error('⚠️ Falha na verificação (movimentações):', err));
 }, 300000);
 
 module.exports = {
